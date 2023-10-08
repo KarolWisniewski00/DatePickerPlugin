@@ -632,6 +632,14 @@
                 this.seclectedRightDate = new Date(year, this.rightCurrentDate.getMonth(), this.rightCurrentDate.getDate())
                 this.updateColor(direction);
             }
+            setMonthLeft(month, direction = 'l') {
+                this.seclectedLeftDate = new Date(this.leftCurrentDate.getFullYear(), month, this.leftCurrentDate.getDate());
+                this.updateColor(direction);
+            }
+            setMonthRight(month, direction = 'l') {
+                this.seclectedRightDate = new Date(this.rightCurrentDate.getFullYear(), month, this.rightCurrentDate.getDate())
+                this.updateColor(direction);
+            }
             setYear(year, direction = 'l') {
                 if (direction == 'l') {
                     this.setYearLeft(year, direction);
@@ -639,6 +647,18 @@
                     this.setRealInput();
                 } else {
                     this.setYearRight(year, direction);
+                    this.setInputHtml();
+                    this.setRealInput('r');
+                    console.log(this.seclectedRightDate);
+                }
+            }
+            setMonth(month, direction = 'l') {
+                if (direction == 'l') {
+                    this.setMonthLeft(month, direction);
+                    this.setInputHtml();
+                    this.setRealInput();
+                } else {
+                    this.setMonthRight(month, direction);
                     this.setInputHtml();
                     this.setRealInput('r');
                     console.log(this.seclectedRightDate);
@@ -748,7 +768,7 @@
                     var d = this.rightCurrentDate.getFullYear() - 10;
                 }
 
-                var start = '<div id="' + d + '-' + direction + '" onclick="datepickerplugin.clicked = true;datepickerplugin.setYear(' + d + ',`' + direction + '`); this.className = `remove-color-' + direction + '-' + this.id + '`; this.style.backgroundColor = `#007548`; this.style.color = `white` " type="button" style="display:flex;flex-direction:column;justify-content: center; align-items: center; color:#2D2926"><div style="margin: 0 10px;margin-bottom:-2px; width:21px;text-align:center;">';
+                var start = '<div id="' + d + '-' + direction + '" onclick="datepickerplugin.clicked = true; datepickerplugin.setYear(' + d + ',`' + direction + '`); this.className = `remove-color-' + direction + '-' + this.id + '`; this.style.backgroundColor = `#007548`; this.style.color = `white` " type="button" style="display:flex;flex-direction:column;justify-content: center; align-items: center; color:#2D2926"><div style="margin: 0 10px;margin-bottom:-2px; width:21px;text-align:center;">';
                 const todayCellEnd = '</div>' + `<svg width="5" height="4" viewBox="0 0 5 4" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.142853" width="4" height="4" rx="2" fill="#007548"/></svg>` + '</div>';
                 const dataCellEnd = '</div>' + `<svg width="5" height="4" viewBox="0 0 5 4" fill="none" xmlns="http://www.w3.org/2000/svg"></svg>` + '</div>';
 
@@ -771,6 +791,38 @@
                     }
                 }
             }
+            setUpMonth(direction) {
+                if (direction == 'l') {
+                    $('#menu-' + this.id + '-month-name-left').html(this.leftCurrentDate.getFullYear())
+                    var d = 0;
+                } else {
+                    $('#menu-' + this.id + '-month-name-right').html(this.leftCurrentDate.getFullYear())
+                    var d = 0;
+                }
+                
+                var start = '<div id="' + d + '-' + direction + '" onclick="datepickerplugin.clicked = true; datepickerplugin.setMonth(' + d + ',`' + direction + '`); this.className = `remove-color-' + direction + '-' + this.id + '`; this.style.backgroundColor = `#007548`; this.style.color = `white` " type="button" style="display:flex;flex-direction:column;justify-content: center; align-items: center; color:#2D2926"><div style="margin: 0 10px;margin-bottom:-2px; width:21px;text-align:center;">';
+                const todayCellEnd = '</div>' + `<svg width="5" height="4" viewBox="0 0 5 4" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.142853" width="4" height="4" rx="2" fill="#007548"/></svg>` + '</div>';
+                const dataCellEnd = '</div>' + `<svg width="5" height="4" viewBox="0 0 5 4" fill="none" xmlns="http://www.w3.org/2000/svg"></svg>` + '</div>';
+
+                //Set up cells
+                for (let week = 0; week < 4; week++) {
+                    if (week == 0) {
+                        var margin = 0;
+                        $('#cal-' + direction + '-' + this.id).html(`<div id="col-${direction}-${this.id}-${week}" style="margin-top:${margin}px;display: flex; flex-direction: row; justify-content: space-between;"></div>`);
+                    } else {
+                        var margin = 35;
+                        $('#cal-' + direction + '-' + this.id).append(`<div id="col-${direction}-${this.id}-${week}" style="margin-top:${margin}px;display: flex; flex-direction: row; justify-content: space-between;"></div>`);
+                    }
+
+
+                    for (let dayOfW = 1; dayOfW < 4; dayOfW++) {
+                        var end = ((d == this.currentMonth) ? todayCellEnd : dataCellEnd);
+                        $('#col-' + direction + '-' + this.id + '-' + week).append(start + this.monthNames[d] + end)
+                        d += 1;
+                        start = '<div id="' + d + '-' + direction + '" onclick="datepickerplugin.clicked = true;datepickerplugin.setMonth(' + d + ',`' + direction + '`);this.className = `remove-color-' + direction + '-' + this.id + '`; this.style.backgroundColor = `#007548`; this.style.color = `white` " type="button" style="display:flex;flex-direction:column;justify-content: center; align-items: center;"><div style="margin: 0 10px;margin-bottom:-2px; width:21px;text-align:center;">';
+                    }
+                }
+            }
             changeWindow(to = null, direction = 'l') {
                 if (direction == 'l') {
                     this.leftSelectedWindow = to;
@@ -783,7 +835,7 @@
                 switch (selectedWindow) {
                     case 'menu':
                         this.showMenu(direction);
-                        this.setUpData(direction);
+                        this.setUpData(direction, data.getMonth(), data.getFullYear());
                         break;
                     case 'year':
                         this.showYear(direction);
@@ -791,10 +843,11 @@
                         break;
                     case 'month':
                         this.showMonth(direction);
+                        this.setUpMonth(direction);
                         break;
                     default:
                         this.showMenu(direction);
-                        this.setUpData(direction);
+                        this.setUpData(direction, data.getMonth(), data.getFullYear());
                         break;
                 }
             }
@@ -849,6 +902,15 @@
                     this.setUpYear(direction);
                 }
             }
+            switchCurrentYearForMonths(direction = 'l', value = 1) {
+                if (direction == 'l') {
+                    this.leftCurrentDate.setYear(this.leftCurrentDate.getFullYear() + value);
+                    this.setUpMonth(direction);
+                } else {
+                    this.rightCurrentDate.setYear(this.rightCurrentDate.getFullYear() + value);
+                    this.setUpMonth(direction);
+                }
+            }
             activateSwitchButtons(direction = 'l') {
                 var self = this;
                 $('#cal-' + direction + '-' + this.id + '-switch-l').on('click', function () {
@@ -859,6 +921,9 @@
                                 break;
                             case 'year':
                                 self.switchCurrentYear(direction, -1);
+                                break;
+                            case 'month':
+                                self.switchCurrentYearForMonths(direction, -1);
                                 break;
                             default:
                                 self.switchCurrentMonth(direction, -1);
@@ -871,6 +936,9 @@
                                 break;
                             case 'year':
                                 self.switchCurrentYear(direction, -1);
+                                break;
+                            case 'month':
+                                self.switchCurrentYearForMonths(direction, -1);
                                 break;
                             default:
                                 self.switchCurrentMonth(direction, -1);
@@ -887,6 +955,9 @@
                             case 'year':
                                 self.switchCurrentYear(direction, 1);
                                 break;
+                            case 'month':
+                                self.switchCurrentYearForMonths(direction, 1);
+                                break;
                             default:
                                 self.switchCurrentMonth(direction, 1);
                                 break;
@@ -898,6 +969,9 @@
                                 break;
                             case 'year':
                                 self.switchCurrentYear(direction, 1);
+                                break;
+                            case 'month':
+                                self.switchCurrentYearForMonths(direction, 1);
                                 break;
                             default:
                                 self.switchCurrentMonth(direction, 1);
